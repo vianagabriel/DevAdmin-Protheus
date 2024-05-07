@@ -1,0 +1,29 @@
+#include 'totvs.ch'
+
+Function U_DbUseArea
+
+ // Prepara o ambiente
+ rpcSetEnv('99','01','admin',' ','FAT','DbSelectArea')
+ 
+ lNewArea := .T.
+ cDriver := 'TOPCONN'
+ cArquivo := retSqlName('SA1')
+ cAlias := 'SA1'
+ lShared := .T.
+ lReadOnly := .F. 
+
+ dbUseArea(lNewArea,cDriver,cArquivo,(cAlias),lShared,lReadOnly)
+
+ dbSelectArea('SB1')
+ 
+ cIndex1 := cArquivo + '1'
+ cIndex2 := cArquivo + '2'
+
+
+ dbSetIndex(cIndex1)
+ dbSetIndex(cIndex2)
+
+ // Encerra o ambiente
+ rpcClearEnv()
+
+Return
