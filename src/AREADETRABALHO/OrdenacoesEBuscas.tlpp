@@ -1,0 +1,19 @@
+#include 'totvs.ch'  // Inclui o arquivo de cabeçalho 'totvs.ch', que contém definições específicas do TOTVS.
+
+Function U_ORDENACAO_E_BUSCAS  // Define a função chamada U_ORDENACAO_E_BUSCAS.
+
+    
+    rpcSetEnv('99', '01')  // Configura o ambiente para operações de RPC com os parâmetros '99' e '01'.
+    
+    dbSelectArea('SA2')  // Seleciona a área de trabalho do banco de dados como 'SA2'.
+    
+    dbSetOrder(11)  // Define a ordem de classificação para operações de banco de dados como '11'.
+    
+    SA1->(dbSetOrder(1), dbSeek('  000003'))  // Define uma nova ordem de classificação para a área de banco de dados SA1 como '1' e busca um registro com chave '000003'.
+    
+    SB1->(dbSetOrder(3))  // Define a ordem de classificação para a área de banco de dados SB1 como '3'.
+    
+    rpcClearEnv()  // Limpa o ambiente configurado anteriormente para operações de RPC.
+    
+ Return  // Retorna da função.
+
