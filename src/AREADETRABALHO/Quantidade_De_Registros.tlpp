@@ -1,0 +1,41 @@
+#include "totvs.ch"
+#include "protheus.ch"
+
+
+/*;/
+      O programa tem como objetivo contar quantos fornecedores existem na tabela SA2 e contruir uma lista de fonecedores com seus códigos e nomes
+      associados.
+/*/
+Function U_Quantidade_De_Registros
+
+    Local nQtdDeRegistros as numeric
+    Local cListaDeFornecedores as character
+
+    rpcSetEnv("99","01") // Configura o ambiente
+
+    // Na área de trabalho (SA2) com dbSetOrder estou utilizando o primeiro indice para ordernar os registros e com
+    // dbGoTop estou posicionando o cursor no primeiro registro.
+    SA2->(dbSetOrder(1),dbGoTop()) 
+
+    While .not. SA2->(eof())// Equanto o cursor não estiver no ultimo registro da Tabela SA2
+
+        nQtdDeRegistros++ // incremento 
+        SA2->(dbSkip()) // dbSkib faz com que o cursor avance registro após registro
+
+    Enddo
+    
+
+   While .not. SA2->(bof()) // Equanto o cursor não estiver no primeiro registro da Tabela SA2
+
+        // Atribuindo para var cListaDeFornecedores o a2_COD e A2_Nome
+        cListaDeFornecedores += CRLF + SA2->(A2_COD + " - " + A2_NOME) 
+        SA2->(dbSkip(-1)) //dbSkib(-1) faz com que o cursor retroceda registro após registro realizando o processo contrario ao anterior
+   Enddo
+
+    fwAlertInfo("Quantidade de registros " + cValToChar(nQtdDeRegistros) + CRLF + cListaDeFornecedores)// montando a janela de exibição com os dados
+
+    SA2->(dbCloseArea())
+    
+    rpcClearEnv() 
+
+Return

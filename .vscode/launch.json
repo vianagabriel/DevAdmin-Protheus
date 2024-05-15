@@ -16,21 +16,7 @@
 		}
 	],
 	"lastPrograms": [
-		{
-			"label": "Sigamdi"
-		},
-		{
-			"label": "U_TESTE"
-		},
-		{
-			"label": "U_Estrutura_de_repeticao"
-		},
-		{
-			"label": "U_Array"
-		},
-		{
-			"label": "U_VETOR"
-		}
+	
 	],
 	"lastProgramExecuted": "U_VETOR"
 }
