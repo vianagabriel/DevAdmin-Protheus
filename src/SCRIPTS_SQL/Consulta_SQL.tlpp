@@ -1,0 +1,22 @@
+#include 'totvs.ch'
+
+Function U_Consulta_SQL
+
+	Local cSQL := ''
+	local aDados := array(0)
+
+	rpcSetEnv('99','01')
+
+	cSQL := "SELECT A2_COD, A2_LOJA, A2_NOME FROM SA2990 WHERE D_E_L_E_T_ = ' ' ORDER BY A2_NOME"
+
+    dbUseArea(.T., 'TOPCONN', tcGenQry(,,cSQL), 'QRY', .T., .F.)
+
+    While .not. QRY->(eof())
+       QRY->(aadd(aDados,{A2_COD, A2_LOJA, A2_NOME}), dbSkip())
+    Enddo
+
+    QRY->(dbCloseArea())
+    
+	rpcClearEnv()
+
+Return aDados
