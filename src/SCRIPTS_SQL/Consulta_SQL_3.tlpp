@@ -1,0 +1,22 @@
+#include 'totvs.ch'
+
+
+Function U_Consulta_SQL_3
+
+	rpcSetEnv("99", "01")
+
+	local aDados := array(0)
+      
+	BeginSQL alias 'QRY'
+      Select A1_COD, A1_NOME 
+      From %table:SA1% SA1
+      Where A1_FILIAL = %xFilial:SA1%
+      Order By %order:SA1,1%
+	EndSQL
+
+	QRY->(dbEval({|| aadd(aDados, {A1_COD,A1_NOME})}))
+
+	rpcClearEnv()
+
+
+Return

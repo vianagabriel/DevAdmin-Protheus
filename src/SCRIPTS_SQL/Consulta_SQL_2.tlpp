@@ -1,0 +1,17 @@
+#include 'totvs.ch'
+#include 'topconn.ch'
+
+Function U_Consulta_SQL_2
+
+    rpcSetEnv("99", "01")
+
+    local aDados := array(0)
+    local cSQL := "SELECT A1_COD,A1_NOME,A1_DTNASC FROM SA1990 ORDER BY A1_COD"
+
+    TcQuery cSQL new alias QRY
+
+    QRY->(dbEval({|| aadd(aDados, {A1_COD,A1_NOME,A1_DTNASC})}))
+
+    rpcClearEnv()
+
+Return aDados
