@@ -1,0 +1,20 @@
+#include 'totvs.ch'
+
+Function U_Update_SQL
+
+	rpcSetEnv("99","01")
+
+	cSQL := "UPDATE " + retSqlName("SA1")
+	cSQL += CRLF + "SET D_E_L_E_T_ = ' ' "
+	cSQL += CRLF + "WHERE D_E_L_E_T_ = '*' "
+
+	nSQL := tcSqlExec(cSQL)
+
+	IF nSQL < 0
+		fwAlertError(tcSqlError(), 'Erro update sql')
+	EndIF
+
+	rpcClearEnv()
+
+
+Return

@@ -1,0 +1,87 @@
+#include 'totvs.ch'
+
+//Programa para exemplo sobre funcionamento de arquivos temporarios
+
+//Importante: A utilização da função CriaTrab já não é mais recomendada dada a evolução do produto. Para a geração de nomes temporários 
+//(como alias para query), recomendamos a utilização da função GetNextAlias e para a criação de tabelas temporárias, 
+//a recomendação é utilizar a FWTemporaryTable:
+
+
+//@see https://tdn.totvs.com/display/public/framework/CriaTrab+-+Retorna+arquivo+de+trabalho
+//@see https://tdn.totvs.com/display/tec/DBCreateIndex
+
+
+Function U_ARQTEMP_CLIENTE_FORNECEDORES
+
+	//Criando ambiente
+	rpcSetEnv('99', '01')
+
+	//Criando matriz com os campos que farao parte do arquivo temporario
+	aCampos := {{"ENTIDADE","C",3,0}, {"CODIGO","C",6,0},{"LOJA","C",2,0},{"NOME","C",30,0}}
+
+	//Esta funcao retorna o nome do arquivo de trabalho que ainda não existe e dependendo dos parametros passados
+	//pode criar um novo arquvio de trabalho
+	cArqTrab := criaTrab(aCampos,.T.)
+
+	dbUseArea(.T.,,cArqTrab,cArqTrab,.T.,.F.)// criacao de uma area de trabalho
+
+	//Criando um novo indice
+	dbCreateIndex(cArqTrab+'1',"CODIGO+LOJA+ENTIDADE",{|| CODIGO+LOJA+ENTIDADE})
+
+	//Setando o indice que será utilizado
+	dbSetIndex(cArqTrab+'1')
+
+	SA1->(dbSetOrder(1))
+
+
+	While .not. SA1->(eof())
+      reclock(cArqTrab,.T.)
+       CODIGO   := SA1->A1_COD
+       LOJA     := SA1->A1_LOJA
+       NOME     := SA1->A1_NOME
+       ENTIDADE := "SA1"
+      msunlock()
+
+      SA1->(dbSkip())
+    
+	Enddo
+
+    //------- Outra Forma de popular o arquivo temp usando o dbSelectArea
+    
+    dbSelectArea("SA2")
+    dbSetOrder(1)
+
+    
+    //Nesta forma está sendo usado o dbSelectArea ele já coloca a tabela SA2 como a area de trabalho principal por isso quando for 
+    //necessário fazer manipulações não é necessário especificar para qual area de trabalho aquela manipulacao esta sendo feito
+    //Em vez de colocar SA2->(eof) pode só se colocar o eof pois o dbSelectArea ja deixou ela como area principal, porem se necessário
+    //manipulaçoes de outras areas ai precisa deixar explicito  (cArqTrab)->CODIGO   := A2_COD
+
+    While .not. eof()  
+       (cArqTrab)->(reclock(cArqTrab,.T.))
+            (cArqTrab)->CODIGO   := A2_COD
+            (cArqTrab)->LOJA     := A2_LOJA
+            (cArqTrab)->NOME     := A2_NOME
+            (cArqTrab)->ENTIDADE := alias()
+       (cArqTrab)->(msunlock())
+       
+       dbSkip() 
+    Enddo
+
+
+    (cArqTrab)->(dbCloseArea())
+
+    IF File('\system\' + cArqTrab + '.dtc')
+       FErase('\system\' + cArqTrab + '.dtc')
+    EndIF
+
+    IF File('\system\' + cArqTrab + '1.cdx')
+       FErase('\system\' + cArqTrab + '1.cdx')
+    EndIF
+
+	rpcClearEnv()
+
+Return
+
+
+
