@@ -20,7 +20,7 @@ Function U_ARQTEMP_CLIENTE_FORNECEDORES
 	aCampos := {{"ENTIDADE","C",3,0}, {"CODIGO","C",6,0},{"LOJA","C",2,0},{"NOME","C",30,0}}
 
 	//Esta funcao retorna o nome do arquivo de trabalho que ainda não existe e dependendo dos parametros passados
-	//pode criar um novo arquvio de trabalho
+	//pode criar um novo arquivo de trabalho
 	cArqTrab := criaTrab(aCampos,.T.)
 
 	dbUseArea(.T.,,cArqTrab,cArqTrab,.T.,.F.)// criacao de uma area de trabalho
