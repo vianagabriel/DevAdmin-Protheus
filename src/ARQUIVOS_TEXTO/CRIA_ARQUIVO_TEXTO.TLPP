@@ -1,0 +1,77 @@
+#include 'totvs.ch'
+
+
+
+Function U_CRIA_ARQUIVO_TEXTO
+
+	local cSaveFile  as character
+	local cBuffer    as character
+	local cPrefixo   as character
+	local oArqTxt    as object
+	local lExistFile as logical
+	local lArqTxt    as logical
+
+	rpcSetEnv('99','01')
+
+	//Setando aonde o listaCliFor estará
+	cSaveFile  := 'C:\TOTVS\ListaCliFor.txt'
+	//Passando para o File o cSaveFile ('C:\TOTVS\ListaCliFor.txt') se existir retorna .T. se não .F.
+	lExistFile := File(cSaveFile)
+	//Classe de auxilo na gravação de arquivo, primeiro parametro -> Nome do arquivo, deve informar o path completo
+	//Segundo parâmetro -> se .T. faz a escrita só no final do arquivo se .F. faz a escrita a cada nova chamada da classe
+	oArqTxt    := fwFileWriter():new(cSaveFile,.F.)
+
+	// Checando se esse arquivo já existe
+	IF lExistFile
+		//o método open recebe um numero se 0 - arquivo somente para leitura, se 1- arquivo para escrita, 2- Os Dois
+		//Abrindo o arquivo para edição e leitura
+		lArqTxt   := oArqTxt:open(2)
+
+		// Se der tudo certo com o método clear é feito a limpeza para poder ser feito uma nova gravação
+		IF lArqTxt
+			oArqTxt:clear()
+		Else
+			// caso contrario é exibido um erro para o usurário
+			fwAlertError(oArqTxt:error():message,'ERRO NA ABERTURA DO ARQUIVO')
+			rpcClearEnv()
+			Return .F.
+		EndIF
+
+//----------------------------------------------------------------------------------		
+// Se o arquivo não existir aqui é a parte onde será feito a criação dele
+	Else
+		// Criando o arquivo
+		lArqTxt   :=oArqTxt:create()
+
+		//Caso ocorra algo de errado será adotada essa tratativa de erro usando o método error do fwFileWriter
+		If .not. lArqTxt
+			fwAlertError(oArqTxt:error():message,'ERRO NA CRIACAO DO ARQUIVO')
+			rpcClearEnv()
+			Return .F.
+		EndIF
+	EndIF
+
+	cBuffer  := padr("ENTIDADE",10) + padr("CODIGO",10) + padr("LOJA",5) + padr("NOME",35)
+	lWrite  := oArqTxt:write(cBuffer)
+
+
+	If .not. lArqTxt
+		fwAlertError(oArqTxt:error():message,'ERRO NA GRAVAÇÂO DO ARQUIVO')
+		rpcClearEnv()
+		Return .F.
+	EndIF
+
+	cBuffer  := CRLF + strtran(space(80)," ","-")
+    oArqTxt:write(cBuffer)
+
+	bBloco := { || cPrefixo := substr(alias(),2,2),cBuffer := CRLF + padr(alias(),10) + padr(&(cPrefixo + "_COD"),10) + padr(&(cPrefixo + "_LOJA"),5) + padr(&(cPrefixo + "_NOME"), 30), oArqTxt:write(cBuffer)}
+
+	SA1->(dbEval(bBloco))
+	SA2->(dbEval(bBloco))
+
+    oArqTxt:close()
+
+	rpcClearEnv()
+
+
+Return
